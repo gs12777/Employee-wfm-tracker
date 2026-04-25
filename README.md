@@ -120,7 +120,7 @@ Open the `.pbip` file using Power BI Desktop to explore the project.
 
 ## Project Preview
 
-![Dashboard Preview](images/Dashboard_Overview.png)
-![Dashboard Preview](images/Insight-1.png)
-![Dashboard Preview](images/Insight-2.png)
+![Dashboard Preview](Images/Dashboard_Overview.png)
+![Dashboard Preview](Images/Insight-1.png)
+![Dashboard Preview](Images/Insight-2.png)
 
