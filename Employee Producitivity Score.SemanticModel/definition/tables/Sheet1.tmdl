@@ -1,0 +1,152 @@
+table Sheet1
+	lineageTag: e1fbd551-23e3-47dc-bb30-67d374a268aa
+
+	measure Total_Work_Hours = SUM(Sheet1[Work_Hours])
+		lineageTag: ea627186-e65d-4ca2-a911-0cfe28e7953c
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure Avg_Productivity_Score = AVERAGE(Sheet1[Productivity_Score])
+		lineageTag: b7211b2d-d2e9-4212-a951-a5de8963aee7
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure Avg_Department_Productivity = ```
+			
+			AVERAGEX(VALUES(Sheet1[Department]), 
+			CALCULATE(AVERAGE(Sheet1[Productivity_Score])))
+			```
+		lineageTag: 82d39874-b728-4656-8e10-102fefc89dfe
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure High_Performers = COUNTROWS(FILTER(Sheet1, Sheet1[Productivity_Score] >= 80))
+		formatString: 0
+		lineageTag: d5730c3a-31ec-4bf7-bc3c-a1d0744e3b25
+
+	column Employee_ID
+		dataType: string
+		lineageTag: 1347b977-1dcf-4207-a5ea-62aaed81d417
+		summarizeBy: none
+		sourceColumn: Employee_ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Name
+		dataType: string
+		lineageTag: c5dad6af-507f-435a-83aa-37ec8092ed2e
+		summarizeBy: none
+		sourceColumn: Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column Department
+		dataType: string
+		lineageTag: e4cf436a-1838-4698-a767-424568f12b8e
+		summarizeBy: none
+		sourceColumn: Department
+
+		annotation SummarizationSetBy = Automatic
+
+	column Date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 67beb915-87c7-4434-bf49-36f69ad01901
+		summarizeBy: none
+		sourceColumn: Date
+
+		variation Variation
+			isDefault
+			relationship: 4eb07263-6077-428f-9e7d-18ab2d30ce8b
+			defaultHierarchy: LocalDateTable_7cf501f5-0ad9-4a1d-904a-34648777d08b.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Work_Hours
+		dataType: double
+		lineageTag: 2c70e3c0-8b53-4dbc-8435-76cd3faf789c
+		summarizeBy: sum
+		sourceColumn: Work_Hours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Tasks_Assigned
+		dataType: int64
+		formatString: 0
+		lineageTag: 70e6c965-0cae-41c1-857e-d0c2900d9111
+		summarizeBy: sum
+		sourceColumn: Tasks_Assigned
+
+		annotation SummarizationSetBy = Automatic
+
+	column Tasks_Completed
+		dataType: int64
+		formatString: 0
+		lineageTag: ea3f0ff6-fcee-4fe6-ae64-64fefaf73ce4
+		summarizeBy: sum
+		sourceColumn: Tasks_Completed
+
+		annotation SummarizationSetBy = Automatic
+
+	column Break_Time
+		dataType: double
+		lineageTag: 184bd02a-1fef-4a3a-b6bd-42d2317255d5
+		summarizeBy: sum
+		sourceColumn: Break_Time
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Distraction_Time
+		dataType: double
+		lineageTag: 76e026a1-6dfb-4bea-88b6-7209da0fbfe3
+		summarizeBy: sum
+		sourceColumn: Distraction_Time
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Productivity_Score
+		dataType: double
+		lineageTag: 156c5b8f-4385-4bc0-a267-6b95864de079
+		summarizeBy: sum
+		sourceColumn: Productivity_Score
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Performance_Category
+		dataType: string
+		lineageTag: 6d4e33f8-ca2c-44d9-b003-80d3b0fdaf3a
+		summarizeBy: none
+		sourceColumn: Performance_Category
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Sheet1 = m
+		mode: import
+		source = ```
+				let
+				    Source = Excel.Workbook(File.Contents("C:\Users\gurus\Downloads\Power Bi\Employee_Productivity_Tracker.xlsx"), null, true),
+				    Sheet1_Sheet = Source{[Item="Sheet1",Kind="Sheet"]}[Data],
+				    #"Promoted Headers" = Table.PromoteHeaders(Sheet1_Sheet, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"Employee_ID", type text}, {"Name", type text}, {"Department", type text}, {"Date", type date}, {"Work_Hours", type number}, {"Tasks_Assigned", Int64.Type}, {"Tasks_Completed", Int64.Type}, {"Break_Time", type number}, {"Distraction_Time", type number}, {"Productivity_Score", type number}}),
+				    #"Added Custom" = Table.AddColumn(#"Changed Type", "Custom", each if [Productivity_Score] >= 80 then "High Performer"  
+				else if [Productivity_Score] >= 50 then "Moderate Performer"  
+				else "Low Performer"),
+				    #"Renamed Columns" = Table.RenameColumns(#"Added Custom",{{"Custom", "Performance_Category"}})
+				in
+				    #"Renamed Columns"
+				```
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

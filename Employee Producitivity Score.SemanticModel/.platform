@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "SemanticModel",
+    "displayName": "Employee Producitivity Score"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "10a791f8-d1bd-4a84-94f6-8ea8b62eef16"
+  }
+}
